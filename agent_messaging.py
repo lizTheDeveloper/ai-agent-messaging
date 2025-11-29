@@ -25,20 +25,18 @@ NATS_URL = os.environ.get('NATS_URL', 'nats://localhost:4222')
 # Namespace all NATS subjects to prevent cross-talk between repos
 NATS_NAMESPACE = os.environ.get('NATS_NAMESPACE', 'themultiverse')
 
-# Agent personas based on MATRIX_TOKEN_* in .env
+# Agent personas - customize for your project
 AGENT_PERSONAS = {
-    'sylvia': {'name': 'Sylvia', 'role': 'Teaching Assistant'},
-    'roy': {'name': 'Roy', 'role': 'Course Coordinator'},
-    'cynthia': {'name': 'Cynthia', 'role': 'Student Support'},
-    'moss': {'name': 'Moss', 'role': 'Technical Support'},
-    'tessa': {'name': 'Tessa', 'role': 'Community Manager'},
-    'historian': {'name': 'Historian', 'role': 'Knowledge Keeper'},
-    'architect': {'name': 'Architect', 'role': 'System Designer'},
-    'ray': {'name': 'Ray', 'role': 'Learning Facilitator'},
-    'orchestrator': {'name': 'Orchestrator', 'role': 'Workflow Coordinator'},
-    'monitor': {'name': 'Monitor', 'role': 'System Observer'},
-    'aetherix': {'name': 'Aetherix', 'role': 'Matrix Manager'},
-    'morgan': {'name': 'Morgan', 'role': 'Research Assistant'}
+    'cynthia': {'name': 'Cynthia', 'role': 'Utopian Researcher'},
+    'sylvia': {'name': 'Sylvia', 'role': 'Research Skeptic'},
+    'orchestrator': {'name': 'Orchestrator', 'role': 'Coordinator'},
+    'tessa': {'name': 'Tessa', 'role': 'Far Future UX Designer'},
+    'historian': {'name': 'Historian', 'role': 'Wiki Documentation Updater'},
+    'planner': {'name': 'Planner', 'role': 'Project Plan Manager'},
+    'ray': {'name': 'Ray', 'role': 'Sci-Fi Tech Visionary'},
+    'moss': {'name': 'Moss', 'role': 'Feature Implementer'},
+    'roy': {'name': 'Roy', 'role': 'Simulation Maintainer'},
+    'priya': {'name': 'Priya', 'role': 'Quantitative Validator'}
 }
 
 
