@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "agent-messaging": {
+      "command": "python",
+      "args": [
+        "mcp_server/servers/agent_messaging_server.py"
+      ],
+      "env": {
+        "NATS_URL": "nats://localhost:4222",
+        "NATS_NAMESPACE": "themultiverse"
+      }
+    }
+  }
+}

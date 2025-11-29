@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agent Messaging - The Multiverse School</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        .agents-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .agent-card {
+            background: #f7fafc;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+        .agent-card:hover {
+            background: #edf2f7;
+            border-left-color: #667eea;
+        }
+        .agent-card.active {
+            background: #e9f2ff;
+            border-left-color: #667eea;
+        }
+        .agent-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+        .agent-role {
+            font-size: 12px;
+            color: #718096;
+        }
+        .messages-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 180px);
+        }
+        .messages-header {
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .message {
+            background: #f7fafc;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #cbd5e0;
+        }
+        .message.from-agent {
+            background: #e9f2ff;
+            border-left-color: #667eea;
+        }
+        .message.from-human {
+            background: #f0fff4;
+            border-left-color: #48bb78;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        .message-from {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .message-to {
+            color: #718096;
+        }
+        .message-time {
+            color: #a0aec0;
+            font-size: 11px;
+        }
+        .message-content {
+            color: #4a5568;
+            line-height: 1.5;
+        }
+        .send-panel {
+            border-top: 2px solid #e2e8f0;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        .send-form {
+            display: flex;
+            gap: 10px;
+        }
+        .form-group {
+            flex: 1;
+        }
+        input[type="email"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .stat {
+            background: #f7fafc;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Agent Messaging System</h1>
+            <p>View messages and DM agents in real-time</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="total-messages">0</div>
+                    <div class="stat-label">Total Messages</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="total-agents">{{ agents|length }}</div>
+                    <div class="stat-label">Active Agents</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="agents-panel">
+                <h3 style="margin-bottom: 15px;">Agents</h3>
+                <div class="agent-card active" onclick="selectAgent('all')">
+                    <div class="agent-name">📨 All Messages</div>
+                    <div class="agent-role">View all conversations</div>
+                </div>
+                {% for agent_id, agent_info in agents.items() %}
+                <div class="agent-card" onclick="selectAgent('{{ agent_id }}')">
+                    <div class="agent-name">{{ agent_info.name }}</div>
+                    <div class="agent-role">{{ agent_info.role }}</div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="messages-panel">
+                <div class="messages-header">
+                    <h2 id="current-view">All Messages</h2>
+                </div>
+
+                <div class="messages-container" id="messages">
+                    <p style="color: #a0aec0; text-align: center; padding: 40px;">
+                        Loading messages...
+                    </p>
+                </div>
+
+                <div class="send-panel">
+                    <form class="send-form" onsubmit="sendMessage(event)">
+                        <div class="form-group" style="flex: 0 0 200px;">
+                            <input type="email" id="from-email" placeholder="Your email" required>
+                        </div>
+                        <div class="form-group" style="flex: 0 0 150px;">
+                            <select id="to-agent" style="width: 100%; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px;">
+                                {% for agent_id, agent_info in agents.items() %}
+                                <option value="{{ agent_id }}">{{ agent_info.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <textarea id="message-content" placeholder="Type your message..." required></textarea>
+                        </div>
+                        <button type="submit">Send 📤</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAgent = 'all';
+        let allMessages = [];
+
+        function selectAgent(agentId) {
+            currentAgent = agentId;
+
+            // Update UI
+            document.querySelectorAll('.agent-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            if (agentId === 'all') {
+                document.getElementById('current-view').textContent = 'All Messages';
+            } else {
+                const agentName = document.querySelector(`[onclick="selectAgent('${agentId}')"] .agent-name`).textContent;
+                document.getElementById('current-view').textContent = `Messages with ${agentName}`;
+            }
+
+            // Reload messages
+            loadMessages();
+        }
+
+        async function loadMessages() {
+            try {
+                const url = currentAgent === 'all'
+                    ? '/api/messages'
+                    : `/api/messages/${currentAgent}`;
+
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.success) {
+                    allMessages = data.messages;
+                    displayMessages(allMessages);
+                    document.getElementById('total-messages').textContent = allMessages.length;
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+
+        function displayMessages(messages) {
+            const container = document.getElementById('messages');
+
+            if (messages.length === 0) {
+                container.innerHTML = '<p style="color: #a0aec0; text-align: center; padding: 40px;">No messages yet. Send one to start!</p>';
+                return;
+            }
+
+            container.innerHTML = messages.map(msg => {
+                const isFromAgent = msg.from_user.startsWith('agent_');
+                const className = isFromAgent ? 'from-agent' : 'from-human';
+                const time = new Date(msg.timestamp).toLocaleTimeString();
+
+                return `
+                    <div class="message ${className}">
+                        <div class="message-header">
+                            <div>
+                                <span class="message-from">${msg.from_user}</span>
+                                <span class="message-to">→ ${msg.to_user}</span>
+                            </div>
+                            <span class="message-time">${time}</span>
+                        </div>
+                        <div class="message-content">${msg.content}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendMessage(event) {
+            event.preventDefault();
+
+            const fromEmail = document.getElementById('from-email').value;
+            const toAgent = document.getElementById('to-agent').value;
+            const content = document.getElementById('message-content').value;
+
+            try {
+                const response = await fetch('/api/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        from_user: fromEmail,
+                        to_agent: toAgent,
+                        content: content
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('message-content').value = '';
+                    setTimeout(() => loadMessages(), 500);
+                } else {
+                    alert('Error sending message: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error sending message');
+            }
+        }
+
+        // Auto-refresh messages every 2 seconds
+        setInterval(loadMessages, 2000);
+
+        // Initial load
+        loadMessages();
+    </script>
+</body>
+</html>
