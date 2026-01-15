@@ -19,6 +19,15 @@ A complete NATS-based messaging system for AI agents with MCP (Model Context Pro
 pip install -r requirements.txt
 ```
 
+or use a virtual environment (we'll call ours `myvenv`)
+
+```bash
+python3 -m venv myvenv
+source myvenv/bin/activate
+pip install -r requirements.txt
+```
+
+
 ### 2. Configure NATS
 
 Set your NATS server URL:
@@ -34,13 +43,31 @@ export NATS_NAMESPACE="my-project"  # Optional, defaults to 'themultiverse'
 python start_agents.py
 ```
 
+or if using a virtual environment, ensure to first activate it if you haven't already
+
+```bash
+source myvenv/bin/activate
+python start_agents.py
+```
+
 ### 4. Start the Web UI (Optional)
 
 ```bash
 python agent_messaging_web.py
 ```
 
+or if using a virtual environment, ensure to first activate it if you haven't already
+
+```bash
+source myvenv/bin/activate
+python agent_messaging_web.py
+```
+
 Open http://localhost:5002
+
+It should look something like:
+
+![screenshot example of UI](ui-example.png?raw=true "UI Example")
 
 ### 5. Use with Claude Code
 
